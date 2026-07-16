@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ROOTS · Community Hunger Watch</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ── BRAND TOKENS ─────────────────────────────────────────── */
+:root{
+  --bg:       #EDE8DE;
+  --bg2:      #E5E0D4;
+  --nav-bg:   #FFFFFF;
+  --sb-bg:    #FFFFFF;
+  --card:     #FFFFFF;
+  --card-h:   #F7F4EF;
+
+  --grn:      #2A7A50;
+  --grn-d:    #1B5235;
+  --grn-l:    #3A9C67;
+  --grn-xl:   #EAF5EE;
+  --grn-m:    #C4E8D1;
+
+  --red:      #C0392B;
+  --red-l:    #FDECEA;
+  --red-m:    #F1A9A0;
+  --amb:      #C77B0A;
+  --amb-l:    #FEF6E7;
+  --amb-m:    #F5CC82;
+  --blue:     #2563A8;
+  --blue-l:   #EBF2FC;
+
+  --tx:       #1C2D24;
+  --tx2:      #4A6658;
+  --tx3:      #8AAB96;
+  --bdr:      #D8D2C6;
+  --bdr2:     #C6BFB1;
+
+  --nav-h:    58px;
+  --sb-w:     248px;
+  --rp-w:     286px;
+  --r6:       6px;--r8:8px;--r12:12px;
+  --sh:       0 1px 3px rgba(0,0,0,.08);
+  --sh2:      0 2px 8px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:-apple-system,'Segoe UI',system-ui,sans-serif;font-size:14px;line-height:1.5}
+
+/* ── TOP NAV ────────────────────────────────────────────────── */
+.top-nav{
+  position:fixed;top:0;left:0;right:0;height:var(--nav-h);
+  background:var(--nav-bg);border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;z-index:100;box-shadow:var(--sh);gap:12px;
+}
+.nav-brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.nav-hex{flex-shrink:0}
+.brand-text{line-height:1}
+.brand-name{font-size:18px;font-weight:800;color:var(--grn-d);letter-spacing:.3px}
+.brand-tag{font-size:9px;color:var(--tx3);letter-spacing:.2px;margin-top:1px}
+.nav-center{flex:1;max-width:360px;margin:0 auto}
+.nav-search{width:100%;background:var(--bg);border:1px solid var(--bdr);border-radius:20px;padding:7px 14px 7px 36px;font-size:13px;color:var(--tx);outline:none;position:relative}
+.nav-search:focus{border-color:var(--grn-l);background:#fff}
+.nav-search-wrap{position:relative}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--tx3)}
+.nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.nav-btn{background:var(--bg);border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--tx2);position:relative;transition:background .15s}
+.nav-btn:hover{background:var(--grn-xl)}
+.badge{position:absolute;top:2px;right:2px;background:var(--red);color:#fff;font-size:8px;font-weight:700;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.live-pill{display:flex;align-items:center;gap:5px;background:var(--grn-xl);border:1px solid var(--grn-m);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--grn-d)}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--grn-l);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.nav-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--grn),var(--grn-d));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;flex-shrink:0}
+
+/* ── PAGE WRAPPER ───────────────────────────────────────────── */
+.page{display:flex;min-height:100vh;padding-top:var(--nav-h)}
+
+/* ── LEFT SIDEBAR ───────────────────────────────────────────── */
+.sidebar{
+  width:var(--sb-w);flex-shrink:0;
+  position:fixed;top:var(--nav-h);left:0;bottom:0;
+  background:var(--sb-bg);border-right:1px solid var(--bdr);
+  overflow-y:auto;padding:12px 0;
+}
+.sb-section{padding:0 8px;margin-bottom:8px}
+.sb-label{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.7px;padding:6px 10px 4px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r8);cursor:pointer;color:var(--tx2);font-size:13px;font-weight:500;transition:background .15s;position:relative}
+.sb-item:hover{background:var(--grn-xl);color:var(--grn-d)}
+.sb-item.active{background:var(--grn-xl);color:var(--grn-d);font-weight:700}
+.sb-item.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;border-radius:2px;background:var(--grn)}
+.sb-icon{width:32px;height:32px;border-radius:var(--r8);display:flex;align-items:center;justify-content:center;font-size:15px;background:var(--bg)}
+.sb-item.active .sb-icon{background:var(--grn-m)}
+.sb-badge{margin-left:auto;font-size:10px;font-weight:700;background:var(--red);color:#fff;padding:1px 6px;border-radius:10px}
+.sb-badge.amb{background:var(--amb)}
+.sb-badge.grn{background:var(--grn)}
+.sb-divider{height:1px;background:var(--bdr);margin:8px 16px}
+.sb-stat-wrap{margin:6px 8px;background:var(--grn-xl);border-radius:var(--r12);padding:12px}
+.sb-stat-title{font-size:10px;font-weight:700;color:var(--grn-d);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.sb-stat-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0}
+.sb-stat-label{font-size:11px;color:var(--tx2)}
+.sb-stat-val{font-size:12px;font-weight:700;color:var(--grn-d)}
+.sb-stat-bar{height:3px;background:var(--grn-m);border-radius:2px;margin-top:6px;overflow:hidden}
+.sb-stat-fill{height:100%;border-radius:2px;background:var(--grn)}
+
+/* ── MAIN FEED ──────────────────────────────────────────────── */
+.main{
+  margin-left:var(--sb-w);margin-right:var(--rp-w);
+  flex:1;padding:16px 14px;min-width:0;
+}
+
+/* ── RIGHT PANEL ────────────────────────────────────────────── */
+.right-panel{
+  width:var(--rp-w);flex-shrink:0;
+  position:fixed;top:var(--nav-h);right:0;bottom:0;
+  background:var(--sb-bg);border-left:1px solid var(--bdr);
+  overflow-y:auto;padding:14px;
+}
+
+/* ── PAGE HEADER ────────────────────────────────────────────── */
+.page-hdr{background:var(--card);border-radius:var(--r12);padding:16px 18px;margin-bottom:14px;box-shadow:var(--sh);border:1px solid var(--bdr)}
+.ph-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.ph-title{font-size:20px;font-weight:800;color:var(--grn-d)}
+.ph-sub{font-size:11px;color:var(--tx3);margin-top:2px}
+.ph-meta{font-size:11px;color:var(--tx2);margin-top:6px}
+.ts-span{font-family:monospace;color:var(--grn)}
+
+/* ── ALERT BANNER ────────────────────────────────────────────── */
+.alert-bar{
+  background:linear-gradient(90deg,var(--red-l),#fff8f8);
+  border:1px solid var(--red-m);border-radius:var(--r8);
+  padding:10px 14px;margin-bottom:12px;
+  display:flex;align-items:flex-start;gap:10px;
+}
+.alert-bar.hidden{display:none}
+.ab-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.ab-body{flex:1}
+.ab-title{font-size:12px;font-weight:700;color:var(--red)}
+.ab-items{margin-top:3px;font-size:11px;color:#8B2020}
+.ab-x{background:none;border:1px solid var(--red-m);border-radius:4px;padding:2px 8px;font-size:11px;color:var(--red);cursor:pointer;flex-shrink:0}
+.ab-x:hover{background:var(--red-l)}
+
+/* ── KPI STRIP ───────────────────────────────────────────────── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:var(--card);border-radius:var(--r12);padding:14px 16px;box-shadow:var(--sh);border:1px solid var(--bdr);position:relative;overflow:hidden}
+.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r12) var(--r12) 0 0}
+.kpi.g::after{background:var(--grn)} .kpi.r::after{background:var(--red)} .kpi.a::after{background:var(--amb)} .kpi.b::after{background:var(--blue)}
+.kpi-n{font-size:24px;font-weight:800;color:var(--tx);letter-spacing:-1px;line-height:1}
+.kpi-l{font-size:11px;color:var(--tx2);margin-top:4px;line-height:1.3}
+.kpi-sub{font-size:10px;color:var(--tx3);margin-top:1px}
+.kpi-delta{font-size:10px;margin-top:6px;font-weight:600}
+.kpi-delta.up{color:var(--grn)} .kpi-delta.dn{color:var(--red)} .kpi-delta.nu{color:var(--tx3)}
+
+/* ── PHASE TABS ──────────────────────────────────────────────── */
+.tab-bar{background:var(--card);border-radius:var(--r12) var(--r12) 0 0;border:1px solid var(--bdr);border-bottom:none;display:flex;box-shadow:var(--sh)}
+.tab{flex:1;padding:12px 8px;text-align:center;font-size:12px;font-weight:700;color:var(--tx2);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;border-radius:var(--r12) var(--r12) 0 0;letter-spacing:.2px}
+.tab:hover{background:var(--grn-xl);color:var(--grn-d)}
+.tab.active{color:var(--grn-d);border-bottom-color:var(--grn);background:var(--grn-xl)}
+.tab-pill{display:inline-block;background:var(--bdr);border-radius:10px;padding:1px 7px;font-size:9px;margin-left:4px}
+.tab.active .tab-pill{background:var(--grn-m);color:var(--grn-d)}
+
+/* ── PANEL ───────────────────────────────────────────────────── */
+.panel{display:none;background:var(--card);border:1px solid var(--bdr);border-top:none;border-radius:0 0 var(--r12) var(--r12);padding:16px;flex-direction:column;gap:16px;box-shadow:var(--sh);margin-bottom:14px}
+.panel.active{display:flex}
+
+/* ── SECTION HEADERS ─────────────────────────────────────────── */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sec-title{font-size:13px;font-weight:800;color:var(--tx);letter-spacing:.1px}
+.chip{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px}
+.chip-r{background:var(--red-l);color:var(--red);border:1px solid var(--red-m)}
+.chip-a{background:var(--amb-l);color:var(--amb);border:1px solid var(--amb-m)}
+.chip-g{background:var(--grn-xl);color:var(--grn-d);border:1px solid var(--grn-m)}
+.chip-b{background:var(--blue-l);color:var(--blue);border:1px solid #A8C6ED}
+
+/* ── CHART CARDS ─────────────────────────────────────────────── */
+.chart-card{background:var(--card-h);border:1px solid var(--bdr);border-radius:var(--r12);padding:14px 16px}
+.chart-card canvas{max-height:200px}
+.chart-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ── ZONE GRID ───────────────────────────────────────────────── */
+.zone-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.zone-tile{background:var(--card-h);border:1px solid var(--bdr);border-radius:var(--r8);padding:10px;cursor:pointer;transition:all .15s}
+.zone-tile:hover{box-shadow:var(--sh2);transform:translateY(-1px)}
+.zt-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.zt-num{font-size:9px;font-weight:700;color:var(--tx3);font-family:monospace}
+.zt-flag{font-size:8px;font-weight:700;padding:2px 6px;border-radius:3px}
+.ztf-g{background:var(--grn-xl);color:var(--grn-d)} .ztf-r{background:var(--red-l);color:var(--red)} .ztf-a{background:var(--amb-l);color:var(--amb)} .ztf-x{background:var(--bg2);color:var(--tx3)}
+.zt-name{font-size:11px;font-weight:700;color:var(--tx);margin-bottom:5px;line-height:1.2}
+.zt-stats{display:flex;gap:8px}
+.zt-s{font-size:9.5px;color:var(--tx2)}
+.zt-s span{font-weight:700;color:var(--tx)}
+.zt-bar{height:3px;background:var(--bdr);border-radius:2px;margin-top:6px;overflow:hidden}
+.zt-fill{height:100%;border-radius:2px}
+
+/* ── TWIN CARDS ──────────────────────────────────────────────── */
+.twin{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.twin-card{background:var(--card-h);border:1px solid var(--bdr);border-radius:var(--r12);padding:12px 14px}
+.tc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.tc-label{font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.4px}
+.tc-dot{width:8px;height:8px;border-radius:50%}
+.tc-n{font-size:28px;font-weight:800;color:var(--tx);letter-spacing:-1px;line-height:1}
+.tc-sub{font-size:10px;color:var(--tx3);margin-top:2px}
+.mini-bar{height:4px;background:var(--bdr);border-radius:2px;margin-top:10px;overflow:hidden}
+.mini-fill{height:100%;border-radius:2px;transition:width 1.2s ease}
+.tc-foot{display:flex;justify-content:space-between;margin-top:5px;font-size:10px}
+
+/* ── FLAG TABLE ──────────────────────────────────────────────── */
+.ftable{width:100%;border-collapse:collapse}
+.ftable th{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;padding:4px 10px;text-align:left;background:var(--bg);border-bottom:2px solid var(--bdr)}
+.ftable td{padding:9px 10px;border-bottom:1px solid var(--bdr);font-size:12px;vertical-align:middle}
+.ftable tr:last-child td{border-bottom:none}
+.ftable tr:hover td{background:var(--grn-xl)}
+.sev{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+.sev-r{background:var(--red-l);color:var(--red)} .sev-a{background:var(--amb-l);color:var(--amb)} .sev-g{background:var(--grn-xl);color:var(--grn-d)}
+.zone-tag{font-size:10px;padding:2px 7px;background:var(--bg2);border-radius:4px;font-family:monospace;color:var(--tx2)}
+.time-badge{font-size:10px;color:var(--tx3);font-family:monospace}
+
+/* ── MUAC BAR ────────────────────────────────────────────────── */
+.muac-card{background:var(--card-h);border:1px solid var(--bdr);border-radius:var(--r12);padding:14px 16px}
+.muac-track{height:32px;border-radius:6px;overflow:hidden;display:flex;margin:10px 0 10px}
+.ms{height:100%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;transition:flex 1.2s ease}
+.ms-r{background:var(--red)} .ms-a{background:var(--amb)} .ms-y{background:#B8680A} .ms-g{background:var(--grn)}
+.muac-legend{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.ml{text-align:center}
+.ml-pct{font-size:15px;font-weight:800;line-height:1}
+.ml-n{font-size:10px;color:var(--tx2);margin-top:1px}
+.ml-tag{font-size:9px;margin-top:2px;font-weight:700}
+.ml-ref{font-size:8px;color:var(--tx3);margin-top:1px}
+
+/* ── SCREENING CARDS ─────────────────────────────────────────── */
+.scr-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.scr-card{background:var(--card-h);border:1px solid var(--bdr);border-radius:var(--r12);padding:12px 14px}
+.scr-head{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.scr-ico{font-size:18px}
+.scr-lbl{font-size:11px;font-weight:800;color:var(--tx);text-transform:uppercase;letter-spacing:.3px}
+.scr-big{font-size:22px;font-weight:800;color:var(--tx);letter-spacing:-1px}
+.scr-rows{margin-top:7px;display:flex;flex-direction:column;gap:5px}
+.scr-row{display:flex;align-items:center;justify-content:space-between;padding:3px 0;border-top:1px solid var(--bdr)}
+.scr-rl{font-size:11px;color:var(--tx2)}
+.scr-rv{font-size:11px;font-weight:700}
+.rv-r{color:var(--red)} .rv-a{color:var(--amb)} .rv-g{color:var(--grn)}
+
+/* ── CASE CARDS ──────────────────────────────────────────────── */
+.case-card{background:var(--card-h);border:1px solid var(--bdr);border-radius:var(--r12);padding:12px 14px;display:flex;gap:12px;cursor:pointer;transition:all .15s}
+.case-card:hover{box-shadow:var(--sh2);border-color:var(--bdr2)}
+.case-card+.case-card{margin-top:8px}
+.cc-stripe{width:4px;border-radius:4px;flex-shrink:0;align-self:stretch;min-height:42px}
+.ccs-r{background:var(--red)} .ccs-a{background:var(--amb)} .ccs-y{background:#B8680A}
+.cc-body{flex:1;min-width:0}
+.cc-name{font-size:13px;font-weight:800;color:var(--tx)}
+.cc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.cc-tag{font-size:9.5px;padding:2px 7px;border-radius:4px;background:var(--bg2);color:var(--tx2)}
+.cc-flags{margin-top:5px;font-size:11px;color:var(--tx2);line-height:1.4}
+.cc-flags strong{color:var(--red)}
+.cc-right{flex-shrink:0;text-align:right}
+.cc-sev{font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px}
+.ccv-r{background:var(--red-l);color:var(--red)} .ccv-a{background:var(--amb-l);color:var(--amb)} .ccv-h{background:var(--amb-l);color:var(--amb)}
+.cc-time{font-size:10px;color:var(--tx3);margin-top:4px;font-family:monospace}
+
+/* ── PIPELINE ────────────────────────────────────────────────── */
+.pipeline{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:6px 0}
+.pn{flex:1;min-width:90px;display:flex;flex-direction:column;align-items:center;position:relative}
+.pn:not(:last-child)::after{content:'→';position:absolute;right:-8px;top:22px;font-size:16px;color:var(--tx3)}
+.pn-circ{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:6px;border:2px solid;transition:transform .15s;cursor:pointer}
+.pn-circ:hover{transform:scale(1.1)}
+.pnc-g{background:var(--grn-xl);border-color:var(--grn)} .pnc-a{background:var(--amb-l);border-color:var(--amb)} .pnc-r{background:var(--red-l);border-color:var(--red)} .pnc-b{background:var(--blue-l);border-color:var(--blue)}
+.pn-lbl{font-size:10px;font-weight:700;color:var(--tx);text-align:center;line-height:1.3}
+.pn-n{font-size:18px;font-weight:800;color:var(--tx);line-height:1;margin-top:3px}
+.pn-sub{font-size:9px;color:var(--tx2);text-align:center}
+.pn-pct{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:3px}
+
+/* ── COMPLIANCE TABLE ────────────────────────────────────────── */
+.ctable{width:100%;border-collapse:collapse}
+.ctable th{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;padding:5px 10px;text-align:left;background:var(--bg);border-bottom:2px solid var(--bdr)}
+.ctable td{padding:7px 10px;border-bottom:1px solid var(--bdr);font-size:12px}
+.ctable tr:last-child td{border-bottom:none}
+.ctable tr:hover td{background:var(--grn-xl)}
+.cbar{height:5px;background:var(--bdr);border-radius:3px;overflow:hidden}
+.cb-fill{height:100%;border-radius:3px}
+.st-pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+
+/* ── UPLOAD LOG ──────────────────────────────────────────────── */
+.ulog-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--bdr);font-size:11px}
+.ulog-row:last-child{border-bottom:none}
+.ulog-row:hover{background:var(--grn-xl)}
+.uid{font-family:monospace;font-size:10px;color:var(--tx2);flex-shrink:0;width:58px}
+.uzone{flex-shrink:0;width:48px;font-size:10px}
+.utime{color:var(--tx3);font-family:monospace;font-size:10px;flex-shrink:0;width:44px}
+.uhh{flex:1;color:var(--tx2)}
+.ust{font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px}
+.ust-ok{background:var(--grn-xl);color:var(--grn-d)} .ust-p{background:var(--blue-l);color:var(--blue)} .ust-f{background:var(--red-l);color:var(--red)}
+
+/* ── RIGHT PANEL WIDGETS ─────────────────────────────────────── */
+.rp-card{background:var(--bg);border:1px solid var(--bdr);border-radius:var(--r12);padding:12px;margin-bottom:12px}
+.rp-title{font-size:12px;font-weight:800;color:var(--tx);margin-bottom:10px}
+.rp-alert-row{background:var(--card);border-radius:var(--r8);padding:9px 10px;margin-bottom:6px;cursor:pointer;border:1px solid var(--bdr);transition:all .15s}
+.rp-alert-row:hover{border-color:var(--red-m);background:var(--red-l)}
+.rpa-top{display:flex;align-items:flex-start;justify-content:space-between;gap:6px}
+.rpa-text{font-size:11px;font-weight:600;color:var(--tx)}
+.rpa-time{font-size:9.5px;color:var(--tx3);font-family:monospace;white-space:nowrap}
+.rpa-sub{font-size:10px;color:var(--tx2);margin-top:2px}
+.rpa-chip{font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px}
+.progress-row{margin-bottom:8px}
+.pr-top{display:flex;justify-content:space-between;font-size:11px;color:var(--tx2);margin-bottom:3px}
+.pr-val{font-weight:700;color:var(--grn-d)}
+.pr-bar{height:6px;background:var(--bdr);border-radius:3px;overflow:hidden}
+.pr-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
+.stat-list-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--bdr);font-size:11px}
+.stat-list-row:last-child{border-bottom:none}
+.slr-l{color:var(--tx2)}
+.slr-v{font-weight:700;color:var(--tx)}
+
+/* ── PASSPORT RIBBON ─────────────────────────────────────────── */
+.passport-ribbon{background:linear-gradient(135deg,var(--grn-d),var(--grn));border-radius:var(--r12);padding:12px 16px;margin-bottom:14px;box-shadow:var(--sh2)}
+.pr-title{font-size:10px;font-weight:700;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px}
+.pr-steps{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+.pr-step{font-size:10px;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.18);color:#fff;font-weight:600;border:1px solid rgba(255,255,255,.25)}
+.pr-step.hl{background:rgba(255,255,255,.35);border-color:rgba(255,255,255,.6)}
+.pr-arr{color:rgba(255,255,255,.5);font-size:11px}
+.pr-note{font-size:9.5px;color:rgba(255,255,255,.65);margin-top:6px}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ TOP NAV ══════════════ -->
+<nav class="top-nav">
+  <div class="nav-brand">
+    <div class="nav-hex">
+      <svg width="36" height="40" viewBox="0 0 36 40">
+        <polygon points="18,1 34,10 34,30 18,39 2,30 2,10" fill="#EAF5EE" stroke="#2A7A50" stroke-width="1.8"/>
+        <text x="18" y="21" text-anchor="middle" dominant-baseline="central" fill="#1B5235" font-size="11" font-weight="800" font-family="system-ui">R</text>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <div class="brand-name">ROOTS</div>
+      <div class="brand-tag">Community Hunger Watch · Kifaru</div>
+    </div>
+  </div>
+  <div class="nav-center">
+    <div class="nav-search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="nav-search" type="text" placeholder="Search zones, cases, CHW IDs...">
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-btn" title="Alerts">🔔<span class="badge">3</span></div>
+    <div class="nav-btn" title="Messages">💬<span class="badge" style="background:var(--grn)">7</span></div>
+    <div class="nav-btn" title="Export">📤</div>
+    <div class="live-pill"><span class="live-dot"></span>LIVE</div>
+    <div class="nav-avatar">KNC</div>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- ══════════════ LEFT SIDEBAR ══════════════ -->
+<aside class="sidebar">
+  <div class="sb-section">
+    <div class="sb-item active">
+      <div class="sb-icon">📊</div>
+      Hunger Watch
+    </div>
+    <div class="sb-item">
+      <div class="sb-icon">🗺️</div>
+      Zone Map
+    </div>
+    <div class="sb-item">
+      <div class="sb-icon">👩‍⚕️</div>
+      Field Cadres
+      <span class="sb-badge grn">412</span>
+    </div>
+    <div class="sb-item">
+      <div class="sb-icon">🚨</div>
+      Active Flags
+      <span class="sb-badge">18</span>
+    </div>
+    <div class="sb-item">
+      <div class="sb-icon">💊</div>
+      Supplementation
+    </div>
+  </div>
+  <div class="sb-divider"></div>
+  <div class="sb-section">
+    <div class="sb-label">Data Pipeline</div>
+    <div class="sb-item">
+      <div class="sb-icon">📋</div>
+      Passport Records
+    </div>
+    <div class="sb-item">
+      <div class="sb-icon">📱</div>
+      SMS Uploads
+      <span class="sb-badge amb">75</span>
+    </div>
+    <div class="sb-item">
+      <div class="sb-icon">💻</div>
+      ODK / DHIS2
+    </div>
+    <div class="sb-item">
+      <div class="sb-icon">📈</div>
+      Reports
+    </div>
+  </div>
+  <div class="sb-divider"></div>
+  <div class="sb-section">
+    <div class="sb-label">Interventions</div>
+    <div class="sb-item">
+      <div class="sb-icon">🌿</div>
+      Int. 6 — NCD Screens
+    </div>
+    <div class="sb-item">
+      <div class="sb-icon">🪪</div>
+      Int. 9 — Passport
+    </div>
+    <div class="sb-item">
+      <div class="sb-icon">🐟</div>
+      Food Systems
+    </div>
+  </div>
+  <div class="sb-divider"></div>
+  <div class="sb-stat-wrap">
+    <div class="sb-stat-title">Cycle Progress</div>
+    <div class="sb-stat-row"><span class="sb-stat-label">Week 3 of 4</span><span class="sb-stat-val">75%</span></div>
+    <div class="sb-stat-bar"><div class="sb-stat-fill" style="width:75%"></div></div>
+    <div class="sb-stat-row" style="margin-top:8px"><span class="sb-stat-label">Screened</span><span class="sb-stat-val">2,847</span></div>
+    <div class="sb-stat-row"><span class="sb-stat-label">Flagged</span><span class="sb-stat-val" style="color:var(--red)">18</span></div>
+    <div class="sb-stat-row"><span class="sb-stat-label">RUTF active</span><span class="sb-stat-val" style="color:var(--amb)">172</span></div>
+  </div>
+</aside>
+
+<!-- ══════════════ MAIN FEED ══════════════ -->
+<main class="main">
+
+  <!-- Page header -->
+  <div class="page-hdr">
+    <div class="ph-top">
+      <div>
+        <div class="ph-title">Community Hunger Watch Dashboard</div>
+        <div class="ph-sub">Kifaru Coastal Lowlands · Nutrition Surveillance · ROOTS Programme Year 3</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:11px;color:var(--tx2)">Last updated</div>
+        <div class="ts-span" id="ts-display" style="font-size:13px;font-weight:700">—</div>
+      </div>
+    </div>
+    <div class="ph-meta">
+      <strong>ROOTS</strong> · Resilient Origin-Based Optimized Transitions for Sustenance ·
+      <span style="color:var(--grn-d);font-weight:700">3 active alerts</span> ·
+      <span style="color:var(--tx3)">Data latency ≤14 days</span>
+    </div>
+  </div>
+
+  <!-- Alert Banner -->
+  <div class="alert-bar" id="alert-bar">
+    <div class="ab-icon">⚠️</div>
+    <div class="ab-body">
+      <div class="ab-title">3 Critical Flags Requiring Immediate Action</div>
+      <div class="ab-items">
+        Z-04 oedema (child 18mo) · Z-02 SAM MUAC 108mm · Z-02 gestational glucose 2+ (Amina, Shelter 14A)
+      </div>
+    </div>
+    <button class="ab-x" onclick="document.getElementById('alert-bar').classList.add('hidden')">✕ Dismiss</button>
+  </div>
+
+  <!-- KPI Strip -->
+  <div class="kpi-grid">
+    <div class="kpi g">
+      <div class="kpi-n" data-count="412">0</div>
+      <div class="kpi-l">Active Field Workers</div>
+      <div class="kpi-sub">186 TBAs · 226 VHWs</div>
+      <div class="kpi-delta up">↑ 8 from last cycle</div>
+    </div>
+    <div class="kpi b">
+      <div class="kpi-n" data-count="2847">0</div>
+      <div class="kpi-l">Screened This Week</div>
+      <div class="kpi-sub">8 zones · 18 CHW circuits</div>
+      <div class="kpi-delta up">↑ 312 week-on-week</div>
+    </div>
+    <div class="kpi r">
+      <div class="kpi-n" data-count="18">0</div>
+      <div class="kpi-l">RED Flags Pending</div>
+      <div class="kpi-sub">Requires follow-up today</div>
+      <div class="kpi-delta dn">↑ 4 since yesterday</div>
+    </div>
+    <div class="kpi a">
+      <div class="kpi-n">72.4%</div>
+      <div class="kpi-l">Upload Compliance</div>
+      <div class="kpi-sub">312/431 CHWs · SMS batch</div>
+      <div class="kpi-delta dn">↓ 3.2% this cycle</div>
+    </div>
+  </div>
+
+  <!-- Passport Ribbon -->
+  <div class="passport-ribbon">
+    <div class="pr-title">Nutrition Passport · Int. 9 · Paper-first data flow</div>
+    <div class="pr-steps">
+      <span class="pr-step hl">📋 Household Card</span><span class="pr-arr">→</span>
+      <span class="pr-step hl">📄 Weekly Form</span><span class="pr-arr">→</span>
+      <span class="pr-step hl">📱 SMS Upload</span><span class="pr-arr">→</span>
+      <span class="pr-step hl">💻 ODK Digitise</span><span class="pr-arr">→</span>
+      <span class="pr-step hl">📊 Hunger Watch</span><span class="pr-arr">→</span>
+      <span class="pr-step hl">🌍 Kifaru Dashboard</span><span class="pr-arr">→</span>
+      <span class="pr-step" style="background:rgba(255,100,100,.3);border-color:rgba(255,150,150,.5)">🚨 Early Warning</span>
+    </div>
+    <div class="pr-note">RED-flag SAM/urgent cases: CHW direct phone escalation to district nurse within 24 hrs · Routine batch latency ≤14 days · Zone 8 network outage active</div>
+  </div>
+
+  <!-- Phase Tabs -->
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab(0)">Phase 1 — Field Network <span class="tab-pill">8 zones</span></div>
+    <div class="tab" onclick="switchTab(1)">Phase 2 — Clinical Screening <span class="tab-pill">18 flags</span></div>
+    <div class="tab" onclick="switchTab(2)">Phase 3 — Data Pipeline <span class="tab-pill">72.4%</span></div>
+  </div>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║  PHASE 1                    ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <div class="panel active" id="p1">
+
+    <!-- Trend Charts -->
+    <div class="chart-pair">
+      <div class="chart-card">
+        <div class="sec-hdr">
+          <div class="sec-title">Weekly Screening Activity</div>
+          <span class="chip chip-g">8-week trend</span>
+        </div>
+        <canvas id="chart-screening"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="sec-hdr">
+          <div class="sec-title">Field Worker Deployment</div>
+          <span class="chip chip-b">TBA vs VHW</span>
+        </div>
+        <canvas id="chart-fieldworkers"></canvas>
+      </div>
+    </div>
+
+    <!-- Zone Grid -->
+    <div>
+      <div class="sec-hdr">
+        <div class="sec-title">Community Zone Status</div>
+        <span class="chip chip-r">2 critical · 2 monitoring</span>
+      </div>
+      <div class="zone-grid">
+        <div class="zone-tile">
+          <div class="zt-top"><span class="zt-num">Z-01</span><span class="zt-flag ztf-g">CLEAR</span></div>
+          <div class="zt-name">Northern Coast</div>
+          <div class="zt-stats"><span class="zt-s">TBA <span>24</span></span><span class="zt-s">VHW <span>18</span></span></div>
+          <div class="zt-bar"><div class="zt-fill" style="width:92%;background:var(--grn)"></div></div>
+        </div>
+        <div class="zone-tile" style="border-color:var(--red-m)">
+          <div class="zt-top"><span class="zt-num">Z-02</span><span class="zt-flag ztf-r">2 SAM FLAGS</span></div>
+          <div class="zt-name">Central Settlement</div>
+          <div class="zt-stats"><span class="zt-s">TBA <span>31</span></span><span class="zt-s">VHW <span>29</span></span></div>
+          <div class="zt-bar"><div class="zt-fill" style="width:100%;background:var(--red)"></div></div>
+        </div>
+        <div class="zone-tile" style="border-color:var(--amb-m)">
+          <div class="zt-top"><span class="zt-num">Z-03</span><span class="zt-flag ztf-a">BP SCREEN DUE</span></div>
+          <div class="zt-name">Western Lowlands</div>
+          <div class="zt-stats"><span class="zt-s">TBA <span>22</span></span><span class="zt-s">VHW <span>26</span></span></div>
+          <div class="zt-bar"><div class="zt-fill" style="width:68%;background:var(--amb)"></div></div>
+        </div>
+        <div class="zone-tile" style="border-color:var(--red-m)">
+          <div class="zt-top"><span class="zt-num">Z-04</span><span class="zt-flag ztf-r">OEDEMA FLAG</span></div>
+          <div class="zt-name">Eastern Delta</div>
+          <div class="zt-stats"><span class="zt-s">TBA <span>18</span></span><span class="zt-s">VHW <span>22</span></span></div>
+          <div class="zt-bar"><div class="zt-fill" style="width:88%;background:var(--red)"></div></div>
+        </div>
+        <div class="zone-tile">
+          <div class="zt-top"><span class="zt-num">Z-05</span><span class="zt-flag ztf-g">CLEAR</span></div>
+          <div class="zt-name">Southern Fishing</div>
+          <div class="zt-stats"><span class="zt-s">TBA <span>27</span></span><span class="zt-s">VHW <span>30</span></span></div>
+          <div class="zt-bar"><div class="zt-fill" style="width:100%;background:var(--grn)"></div></div>
+        </div>
+        <div class="zone-tile">
+          <div class="zt-top"><span class="zt-num">Z-06</span><span class="zt-flag ztf-g">CLEAR</span></div>
+          <div class="zt-name">Inland Camp A</div>
+          <div class="zt-stats"><span class="zt-s">TBA <span>29</span></span><span class="zt-s">VHW <span>34</span></span></div>
+          <div class="zt-bar"><div class="zt-fill" style="width:95%;background:var(--grn)"></div></div>
+        </div>
+        <div class="zone-tile" style="border-color:var(--amb-m)">
+          <div class="zt-top"><span class="zt-num">Z-07</span><span class="zt-flag ztf-a">GLUCOSE FLAG</span></div>
+          <div class="zt-name">Inland Camp B</div>
+          <div class="zt-stats"><span class="zt-s">TBA <span>21</span></span><span class="zt-s">VHW <span>24</span></span></div>
+          <div class="zt-bar"><div class="zt-fill" style="width:74%;background:var(--amb)"></div></div>
+        </div>
+        <div class="zone-tile">
+          <div class="zt-top"><span class="zt-num">Z-08</span><span class="zt-flag ztf-x">NO UPLOAD</span></div>
+          <div class="zt-name">Border Zone</div>
+          <div class="zt-stats"><span class="zt-s">TBA <span>14</span></span><span class="zt-s">VHW <span>16</span></span></div>
+          <div class="zt-bar"><div class="zt-fill" style="width:40%;background:var(--tx3)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TBA + VHW twin -->
+    <div class="twin">
+      <div class="twin-card">
+        <div class="tc-top"><span class="tc-label">TBA Network</span><span class="tc-dot" style="background:var(--grn)"></span></div>
+        <div class="tc-n" data-count="186">0</div>
+        <div class="tc-sub">Traditional birth attendants · 94% zone coverage</div>
+        <div class="mini-bar"><div class="mini-fill" data-width="94" style="background:var(--grn);width:0"></div></div>
+        <div class="tc-foot"><span style="color:var(--tx2)">94% coverage</span><span style="color:var(--amb)">12 pending training</span></div>
+      </div>
+      <div class="twin-card">
+        <div class="tc-top"><span class="tc-label">VHW Network</span><span class="tc-dot" style="background:var(--blue)"></span></div>
+        <div class="tc-n" data-count="226">0</div>
+        <div class="tc-sub">Village health workers · 87% circuit coverage</div>
+        <div class="mini-bar"><div class="mini-fill" data-width="87" style="background:var(--blue);width:0"></div></div>
+        <div class="tc-foot"><span style="color:var(--tx2)">87% coverage</span><span style="color:var(--tx3)">Last circuit: 2 days ago</span></div>
+      </div>
+    </div>
+
+    <!-- Risk Flags Table -->
+    <div>
+      <div class="sec-hdr">
+        <div class="sec-title">Active Risk Flags — Field Reports</div>
+        <span class="chip chip-r">5 requiring action</span>
+      </div>
+      <div style="background:var(--card-h);border:1px solid var(--bdr);border-radius:var(--r12);overflow:hidden">
+        <table class="ftable" style="width:100%">
+          <thead>
+            <tr><th>Zone</th><th>Cadre</th><th>Flag</th><th>Severity</th><th>Time</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="zone-tag">Z-04</span></td><td style="font-family:monospace;font-size:11px">TBA-042</td><td>Bilateral pitting oedema, child 18mo</td><td><span class="sev sev-r">● RED</span></td><td><span class="time-badge">2h ago</span></td></tr>
+            <tr><td><span class="zone-tag">Z-02</span></td><td style="font-family:monospace;font-size:11px">VHW-118</td><td>MUAC 108mm, child 24mo — SAM</td><td><span class="sev sev-r">● RED</span></td><td><span class="time-badge">5h ago</span></td></tr>
+            <tr><td><span class="zone-tag">Z-02</span></td><td style="font-family:monospace;font-size:11px">TBA-014</td><td>Glucose 2+, PLW 7mo pregnant (Amina)</td><td><span class="sev sev-r">● RED</span></td><td><span class="time-badge">8h ago</span></td></tr>
+            <tr><td><span class="zone-tag">Z-07</span></td><td style="font-family:monospace;font-size:11px">TBA-091</td><td>Glucose 2+ on urine dipstick, PLW</td><td><span class="sev sev-a">● AMBER</span></td><td><span class="time-badge">8h ago</span></td></tr>
+            <tr><td><span class="zone-tag">Z-04</span></td><td style="font-family:monospace;font-size:11px">VHW-067</td><td>BP 162/96 mmHg, male 52yrs (Daniel)</td><td><span class="sev sev-a">● AMBER</span></td><td><span class="time-badge">12h ago</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║  PHASE 2                    ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <div class="panel" id="p2">
+
+    <!-- MUAC Trend Chart -->
+    <div class="chart-card">
+      <div class="sec-hdr">
+        <div class="sec-title">MUAC Status Trend — 8 Weeks</div>
+        <span class="chip chip-r">GAM 23% — above emergency threshold (15%)</span>
+      </div>
+      <canvas id="chart-muac" style="max-height:180px"></canvas>
+    </div>
+
+    <!-- MUAC Spectrum -->
+    <div class="muac-card">
+      <div class="sec-hdr">
+        <div class="sec-title">MUAC Screening — Children &lt;5 (This Week)</div>
+        <span class="chip chip-b">2,147 assessed</span>
+      </div>
+      <div class="muac-track">
+        <div class="ms ms-r" style="flex:8">8%</div>
+        <div class="ms ms-a" style="flex:15">15%</div>
+        <div class="ms ms-y" style="flex:22">22%</div>
+        <div class="ms ms-g" style="flex:55">55%</div>
+      </div>
+      <div class="muac-legend">
+        <div class="ml"><div class="ml-pct" style="color:var(--red)">8%</div><div class="ml-n">172 children</div><div class="ml-tag" style="color:var(--red);background:var(--red-l);padding:1px 5px;border-radius:3px;display:inline-block">SAM</div><div class="ml-ref">&lt;115mm</div></div>
+        <div class="ml"><div class="ml-pct" style="color:var(--amb)">15%</div><div class="ml-n">322 children</div><div class="ml-tag" style="color:var(--amb);background:var(--amb-l);padding:1px 5px;border-radius:3px;display:inline-block">MAM</div><div class="ml-ref">115–125mm</div></div>
+        <div class="ml"><div class="ml-pct" style="color:#B8680A">22%</div><div class="ml-n">472 children</div><div class="ml-tag" style="color:#8A4A08;background:#FEF0D0;padding:1px 5px;border-radius:3px;display:inline-block">At risk</div><div class="ml-ref">125–135mm</div></div>
+        <div class="ml"><div class="ml-pct" style="color:var(--grn)">55%</div><div class="ml-n">1,181 children</div><div class="ml-tag" style="color:var(--grn-d);background:var(--grn-xl);padding:1px 5px;border-radius:3px;display:inline-block">Normal</div><div class="ml-ref">&gt;135mm</div></div>
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:var(--tx3);background:var(--red-l);border-radius:4px;padding:5px 8px;border-left:3px solid var(--red)">
+        Sphere threshold: GAM &gt;15% = emergency · Current GAM = 23% (SAM+MAM) · SAM treatment coverage target ≥75% (Sphere minimum)
+      </div>
+    </div>
+
+    <!-- NCD Charts -->
+    <div class="chart-pair">
+      <div class="chart-card">
+        <div class="sec-hdr">
+          <div class="sec-title">Blood Pressure Screening</div>
+          <span class="chip chip-r">62 flagged hypertensive</span>
+        </div>
+        <canvas id="chart-bp" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="sec-hdr">
+          <div class="sec-title">Glucose &amp; PLW Dipstick</div>
+          <span class="chip chip-r">18 urgent glucose flags</span>
+        </div>
+        <canvas id="chart-glucose" style="max-height:180px"></canvas>
+      </div>
+    </div>
+
+    <!-- Screening quad -->
+    <div class="scr-grid">
+      <div class="scr-card">
+        <div class="scr-head"><span class="scr-ico">🩺</span><span class="scr-lbl">BP Screening</span></div>
+        <div><span class="scr-big">384</span> <span style="font-size:11px;color:var(--tx2)">adults screened</span></div>
+        <div class="scr-rows">
+          <div class="scr-row"><span class="scr-rl">≥140/90 — hypertension</span><span class="scr-rv rv-r">62 (16.1%)</span></div>
+          <div class="scr-row"><span class="scr-rl">130–139 — elevated</span><span class="scr-rv rv-a">88 (22.9%)</span></div>
+          <div class="scr-row"><span class="scr-rl">&lt;130 — normal</span><span class="scr-rv rv-g">234 (60.9%)</span></div>
+          <div class="scr-row"><span class="scr-rl">Referred to EPI</span><span class="scr-rv rv-a">41/62</span></div>
+        </div>
+      </div>
+      <div class="scr-card">
+        <div class="scr-head"><span class="scr-ico">💉</span><span class="scr-lbl">Glucose Screening</span></div>
+        <div><span class="scr-big">241</span> <span style="font-size:11px;color:var(--tx2)">adults tested</span></div>
+        <div class="scr-rows">
+          <div class="scr-row"><span class="scr-rl">≥11.1 mmol/L — urgent</span><span class="scr-rv rv-r">18 (7.5%)</span></div>
+          <div class="scr-row"><span class="scr-rl">7.8–11.0 — elevated</span><span class="scr-rv rv-a">34 (14.1%)</span></div>
+          <div class="scr-row"><span class="scr-rl">&lt;7.8 — normal</span><span class="scr-rv rv-g">189 (78.4%)</span></div>
+          <div class="scr-row"><span class="scr-rl">Dipstick / glucometer</span><span class="scr-rv" style="color:var(--tx2)">113 / 128</span></div>
+        </div>
+      </div>
+      <div class="scr-card">
+        <div class="scr-head"><span class="scr-ico">🩹</span><span class="scr-lbl">Dipstick — PLW</span></div>
+        <div><span class="scr-big">198</span> <span style="font-size:11px;color:var(--tx2)">PLW screened</span></div>
+        <div class="scr-rows">
+          <div class="scr-row"><span class="scr-rl">Glucose ≥2+ (GDM risk)</span><span class="scr-rv rv-r">14 (7.1%)</span></div>
+          <div class="scr-row"><span class="scr-rl">Protein ≥2+ (pre-eclampsia)</span><span class="scr-rv rv-r">6 (3.0%)</span></div>
+          <div class="scr-row"><span class="scr-rl">Glucose 1+ (monitor)</span><span class="scr-rv rv-a">22 (11.1%)</span></div>
+          <div class="scr-row"><span class="scr-rl">Urgent referrals sent</span><span class="scr-rv rv-r">20/20</span></div>
+        </div>
+      </div>
+      <div class="scr-card">
+        <div class="scr-head"><span class="scr-ico">💊</span><span class="scr-lbl">Supplementation</span></div>
+        <div><span class="scr-big">312</span> <span style="font-size:11px;color:var(--tx2)">PLW receiving MMS</span></div>
+        <div class="scr-rows">
+          <div class="scr-row"><span class="scr-rl">MMS on-track (compliance)</span><span class="scr-rv rv-g">281 (90.1%)</span></div>
+          <div class="scr-row"><span class="scr-rl">Missed &gt;3 doses this week</span><span class="scr-rv rv-a">31 (9.9%)</span></div>
+          <div class="scr-row"><span class="scr-rl">SQ-LNS children 6–23mo</span><span class="scr-rv rv-g">544 enrolled</span></div>
+          <div class="scr-row"><span class="scr-rl">RUTF active cases</span><span class="scr-rv rv-a">172 children</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Case personas -->
+    <div>
+      <div class="sec-hdr">
+        <div class="sec-title">High-Risk Case Flags</div>
+        <span class="chip chip-r">3 urgent · 4 high</span>
+      </div>
+      <div>
+        <div class="case-card"><div class="cc-stripe ccs-r"></div><div class="cc-body"><div class="cc-name">Amina · F · 26 yrs · 7 months pregnant</div><div class="cc-tags"><span class="cc-tag">Zone 2 · Shelter 14A</span><span class="cc-tag">PLW</span><span class="cc-tag">Prev. pregnancy loss</span></div><div class="cc-flags"><strong>Glucose 2+ dipstick</strong> · MUAC 198mm · Anaemia (pallor) · GDM vs. dietary deficit unresolved</div></div><div class="cc-right"><span class="cc-sev ccv-r">URGENT</span><div class="cc-time">8h · EPI ref. sent</div></div></div>
+        <div class="case-card"><div class="cc-stripe ccs-r"></div><div class="cc-body"><div class="cc-name">Daniel · M · 52 yrs · Displaced fisherman</div><div class="cc-tags"><span class="cc-tag">Zone 4 · Transit Camp</span><span class="cc-tag">Adult NCD</span></div><div class="cc-flags">BP <strong>162/94 mmHg</strong> · Glucose 9.2 mmol/L · BMI 28.4 · Fatigue + polyuria</div></div><div class="cc-right"><span class="cc-sev ccv-r">URGENT</span><div class="cc-time">12h · Module A sent</div></div></div>
+        <div class="case-card"><div class="cc-stripe ccs-r"></div><div class="cc-body"><div class="cc-name">Karim · M · 8 yrs · Amina's son</div><div class="cc-tags"><span class="cc-tag">Zone 2 · Shelter 14A</span><span class="cc-tag">School-age child</span></div><div class="cc-flags">MUAC <strong>132mm (at risk)</strong> · Fatigue · Double burden risk · Calorie-adequate/nutrient-poor</div></div><div class="cc-right"><span class="cc-sev ccv-h">HIGH</span><div class="cc-time">8h · Monitoring</div></div></div>
+        <div class="case-card"><div class="cc-stripe ccs-a"></div><div class="cc-body"><div class="cc-name">Elderly F · ~70 yrs · Amina's mother</div><div class="cc-tags"><span class="cc-tag">Zone 2 · Shelter 14A</span><span class="cc-tag">Older adult · Frailty</span></div><div class="cc-flags">Slow-healing fracture · MUAC 208mm · Sarcopenia risk · Cannot chew standard ration</div></div><div class="cc-right"><span class="cc-sev ccv-a">MEDIUM</span><div class="cc-time">1d · TBA monitoring</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║  PHASE 3                    ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <div class="panel" id="p3">
+
+    <!-- Upload trend -->
+    <div class="chart-card">
+      <div class="sec-hdr">
+        <div class="sec-title">7-Day Upload Activity + Pipeline Throughput</div>
+        <span class="chip chip-a">72.4% compliance · Zone 8 outage</span>
+      </div>
+      <canvas id="chart-pipeline" style="max-height:180px"></canvas>
+    </div>
+
+    <!-- Pipeline flow -->
+    <div style="background:var(--card-h);border:1px solid var(--bdr);border-radius:var(--r12);padding:16px">
+      <div class="sec-hdr"><div class="sec-title">Nutrition Passport Pipeline — This Cycle</div></div>
+      <div class="pipeline">
+        <div class="pn"><div class="pn-circ pnc-g">📋</div><div class="pn-lbl">Paper Card<br>Household</div><div class="pn-n">412</div><div class="pn-sub">CHWs collected</div><span class="pn-pct" style="background:var(--grn-xl);color:var(--grn-d)">baseline</span></div>
+        <div class="pn"><div class="pn-circ pnc-g">📄</div><div class="pn-lbl">Weekly<br>Summary Form</div><div class="pn-n">387</div><div class="pn-sub">forms compiled</div><span class="pn-pct" style="background:var(--grn-xl);color:var(--grn-d)">93.9%</span></div>
+        <div class="pn"><div class="pn-circ pnc-a">📱</div><div class="pn-lbl">SMS Photo<br>Upload</div><div class="pn-n">312</div><div class="pn-sub">batches sent</div><span class="pn-pct" style="background:var(--amb-l);color:var(--amb)">80.6%</span></div>
+        <div class="pn"><div class="pn-circ pnc-b">💻</div><div class="pn-lbl">ODK<br>Digitisation</div><div class="pn-n">298</div><div class="pn-sub">records processed</div><span class="pn-pct" style="background:var(--blue-l);color:var(--blue)">95.5%</span></div>
+        <div class="pn"><div class="pn-circ pnc-g">📊</div><div class="pn-lbl">Hunger Watch<br>Dashboard</div><div class="pn-n">298</div><div class="pn-sub">records live</div><span class="pn-pct" style="background:var(--grn-xl);color:var(--grn-d)">100%</span></div>
+      </div>
+      <div style="margin-top:10px;padding:8px 10px;background:var(--amb-l);border:1px solid var(--amb-m);border-radius:var(--r8);font-size:10.5px;color:var(--amb)">
+        ⚠ Main bottleneck: 75 forms compiled but not yet SMS-uploaded. Zone 8 (Border Zone) accounts for 52 missing uploads — network outage. Est. resolution: 48 hrs.
+      </div>
+    </div>
+
+    <!-- Compliance Table -->
+    <div>
+      <div class="sec-hdr"><div class="sec-title">District Upload Compliance</div><div style="display:flex;gap:6px"><span class="chip chip-g">2 on track</span><span class="chip chip-a">3 review</span><span class="chip chip-r">1 alert</span></div></div>
+      <div style="background:var(--card-h);border:1px solid var(--bdr);border-radius:var(--r12);overflow:hidden">
+        <table class="ctable" style="width:100%">
+          <thead><tr><th>District</th><th>Expected</th><th>Received</th><th>Rate</th><th style="width:90px">Progress</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><code style="font-size:10px">Dist-N</code> Northern</td><td>48</td><td>46</td><td style="color:var(--grn);font-weight:700">95.8%</td><td><div class="cbar"><div class="cb-fill" style="width:95.8%;background:var(--grn)"></div></div></td><td><span class="st-pill" style="background:var(--grn-xl);color:var(--grn-d)">✓ Good</span></td></tr>
+            <tr><td><code style="font-size:10px">Dist-C</code> Central</td><td>52</td><td>44</td><td style="color:var(--amb);font-weight:700">84.6%</td><td><div class="cbar"><div class="cb-fill" style="width:84.6%;background:var(--amb)"></div></div></td><td><span class="st-pill" style="background:var(--amb-l);color:var(--amb)">⚠ Review</span></td></tr>
+            <tr><td><code style="font-size:10px">Dist-W</code> Western</td><td>38</td><td>32</td><td style="color:var(--amb);font-weight:700">84.2%</td><td><div class="cbar"><div class="cb-fill" style="width:84.2%;background:var(--amb)"></div></div></td><td><span class="st-pill" style="background:var(--amb-l);color:var(--amb)">⚠ Review</span></td></tr>
+            <tr><td><code style="font-size:10px">Dist-E</code> Eastern</td><td>45</td><td>37</td><td style="color:var(--amb);font-weight:700">82.2%</td><td><div class="cbar"><div class="cb-fill" style="width:82.2%;background:var(--amb)"></div></div></td><td><span class="st-pill" style="background:var(--amb-l);color:var(--amb)">⚠ Review</span></td></tr>
+            <tr><td><code style="font-size:10px">Dist-S</code> Southern</td><td>41</td><td>41</td><td style="color:var(--grn);font-weight:700">100%</td><td><div class="cbar"><div class="cb-fill" style="width:100%;background:var(--grn)"></div></div></td><td><span class="st-pill" style="background:var(--grn-xl);color:var(--grn-d)">✓ Good</span></td></tr>
+            <tr><td><code style="font-size:10px;color:var(--red)">Dist-B</code> Border</td><td>22</td><td>15</td><td style="color:var(--red);font-weight:700">68.2%</td><td><div class="cbar"><div class="cb-fill" style="width:68.2%;background:var(--red)"></div></div></td><td><span class="st-pill" style="background:var(--red-l);color:var(--red)">✗ Alert</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recent uploads -->
+    <div>
+      <div class="sec-hdr"><div class="sec-title">Recent SMS Batch Uploads</div></div>
+      <div style="background:var(--card-h);border:1px solid var(--bdr);border-radius:var(--r12);overflow:hidden">
+        <div class="ulog-row"><span class="uid">CHW-224</span><span class="uzone">Zone 5</span><span class="utime">14:28</span><span class="uhh">12 households</span><span class="ust ust-ok">✓ Received</span></div>
+        <div class="ulog-row"><span class="uid">CHW-189</span><span class="uzone">Zone 2</span><span class="utime">13:45</span><span class="uhh">8 households</span><span class="ust ust-p">⟳ Processing</span></div>
+        <div class="ulog-row"><span class="uid">CHW-301</span><span class="uzone">Zone 6</span><span class="utime">13:22</span><span class="uhh">15 households</span><span class="ust ust-ok">✓ Received</span></div>
+        <div class="ulog-row"><span class="uid">CHW-077</span><span class="uzone">Zone 4</span><span class="utime">12:55</span><span class="uhh">6 households</span><span class="ust ust-ok">✓ Received</span></div>
+        <div class="ulog-row"><span class="uid" style="color:var(--red)">CHW-156</span><span class="uzone">Zone 3</span><span class="utime">11:30</span><span class="uhh">9 households</span><span class="ust ust-f">✕ Failed</span></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══════════════ RIGHT PANEL ══════════════ -->
+<aside class="right-panel">
+
+  <!-- Alert Queue -->
+  <div class="rp-card" style="background:var(--card)">
+    <div class="rp-title">🚨 Active Alert Queue</div>
+
+    <div class="rp-alert-row">
+      <div class="rpa-top">
+        <span class="rpa-text">Bilateral oedema — Child 18mo</span>
+        <span class="rpa-chip chip-r">RED</span>
+      </div>
+      <div class="rpa-sub">Z-04 · TBA-042 · 2h ago</div>
+    </div>
+    <div class="rp-alert-row">
+      <div class="rpa-top">
+        <span class="rpa-text">SAM — MUAC 108mm, child 24mo</span>
+        <span class="rpa-chip chip-r">RED</span>
+      </div>
+      <div class="rpa-sub">Z-02 · VHW-118 · 5h ago</div>
+    </div>
+    <div class="rp-alert-row">
+      <div class="rpa-top">
+        <span class="rpa-text">Gestational glucose 2+ (Amina)</span>
+        <span class="rpa-chip chip-r">RED</span>
+      </div>
+      <div class="rpa-sub">Z-02 · TBA-014 · Shelter 14A · 8h ago</div>
+    </div>
+    <div class="rp-alert-row" style="border-color:var(--amb-m)">
+      <div class="rpa-top">
+        <span class="rpa-text">BP 162/94 mmHg (Daniel)</span>
+        <span class="rpa-chip chip-a">AMBER</span>
+      </div>
+      <div class="rpa-sub">Z-04 · VHW-067 · 12h ago</div>
+    </div>
+    <div class="rp-alert-row" style="border-color:var(--amb-m)">
+      <div class="rpa-top">
+        <span class="rpa-text">Glucose 2+, PLW dipstick</span>
+        <span class="rpa-chip chip-a">AMBER</span>
+      </div>
+      <div class="rpa-sub">Z-07 · TBA-091 · 8h ago</div>
+    </div>
+  </div>
+
+  <!-- Coverage Progress -->
+  <div class="rp-card" style="background:var(--card)">
+    <div class="rp-title">📈 Programme Coverage</div>
+    <div class="progress-row">
+      <div class="pr-top"><span>MUAC screening (children &lt;5)</span><span class="pr-val">71%</span></div>
+      <div class="pr-bar"><div class="pr-fill" data-w="71" style="background:var(--grn);width:0"></div></div>
+    </div>
+    <div class="progress-row">
+      <div class="pr-top"><span>BP screening (adults)</span><span class="pr-val">64%</span></div>
+      <div class="pr-bar"><div class="pr-fill" data-w="64" style="background:var(--blue);width:0"></div></div>
+    </div>
+    <div class="progress-row">
+      <div class="pr-top"><span>PLW urine dipstick</span><span class="pr-val">58%</span></div>
+      <div class="pr-bar"><div class="pr-fill" data-w="58" style="background:var(--grn-l);width:0"></div></div>
+    </div>
+    <div class="progress-row">
+      <div class="pr-top"><span>SAM treatment coverage</span><span class="pr-val">82%</span></div>
+      <div class="pr-bar"><div class="pr-fill" data-w="82" style="background:var(--grn);width:0"></div></div>
+    </div>
+    <div class="progress-row">
+      <div class="pr-top"><span>Passport card compliance</span><span class="pr-val">72.4%</span></div>
+      <div class="pr-bar"><div class="pr-fill" data-w="72.4" style="background:var(--amb);width:0"></div></div>
+    </div>
+    <div style="font-size:9px;color:var(--tx3);margin-top:6px">Phase 1 target: ≥70% · Phase 2 target: ≥80% · Phase 3 target: ≥85%</div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="rp-card" style="background:var(--card)">
+    <div class="rp-title">📋 This Cycle at a Glance</div>
+    <div class="stat-list-row"><span class="slr-l">Total screened</span><span class="slr-v">2,847</span></div>
+    <div class="stat-list-row"><span class="slr-l">RED flags raised</span><span class="slr-v" style="color:var(--red)">18</span></div>
+    <div class="stat-list-row"><span class="slr-l">AMBER flags</span><span class="slr-v" style="color:var(--amb)">31</span></div>
+    <div class="stat-list-row"><span class="slr-l">RUTF active cases</span><span class="slr-v" style="color:var(--amb)">172</span></div>
+    <div class="stat-list-row"><span class="slr-l">MMS compliance</span><span class="slr-v" style="color:var(--grn)">90.1%</span></div>
+    <div class="stat-list-row"><span class="slr-l">Zone 8 — network outage</span><span class="slr-v" style="color:var(--red)">Active</span></div>
+    <div class="stat-list-row"><span class="slr-l">Data latency (avg)</span><span class="slr-v">11 days</span></div>
+  </div>
+
+  <!-- Source legend -->
+  <div style="font-size:9px;color:var(--tx3);line-height:1.6;padding:4px">
+    <div style="font-weight:700;color:var(--tx2);margin-bottom:3px">Data sources</div>
+    WHO EMRO 2024 · UNICEF 2024 · Sphere Handbook 2018 · Bailey et al. 2020 (ComPAS) · Lane et al. 2024 (BMJ) · WHO PEN · UNICEF RUTF 2023<br>
+    <span style="color:var(--tx3)">Simulated scenario data · 2026 Emory GHCC</span>
+  </div>
+</aside>
+
+</div><!-- /page -->
+
+<script>
+// ── Shared chart defaults (cream/green palette) ──────────────────
+Chart.defaults.font.family = "-apple-system,'Segoe UI',system-ui,sans-serif";
+Chart.defaults.font.size = 11;
+Chart.defaults.color = '#4A6658';
+
+const GRN='#2A7A50', GRN_L='#3A9C67', GRN_XL='rgba(42,122,80,.12)';
+const AMB='#C77B0A', RED='#C0392B', BLU='#2563A8';
+const GRN_A=(a)=>`rgba(42,122,80,${a})`;
+const AMB_A=(a)=>`rgba(199,123,10,${a})`;
+const RED_A=(a)=>`rgba(192,57,43,${a})`;
+const BLU_A=(a)=>`rgba(37,99,168,${a})`;
+const gridOpts={color:'rgba(0,0,0,.06)'};
+
+// ── Tab switching ─────────────────────────────────────────────────
+function switchTab(i){
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+  if(i===1&&!window._ch2){buildPhase2Charts();window._ch2=true;}
+  if(i===2&&!window._ch3){buildPhase3Charts();window._ch3=true;}
+}
+
+// ── Timestamp ─────────────────────────────────────────────────────
+function updateTS(){
+  const d=new Date();
+  document.getElementById('ts-display').textContent=
+    d.toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+}
+updateTS();setInterval(updateTS,30000);
+
+// ── Counter animate ───────────────────────────────────────────────
+document.querySelectorAll('[data-count]').forEach(el=>{
+  const target=parseInt(el.dataset.count),dur=1200,start=performance.now();
+  const tick=now=>{const p=Math.min((now-start)/dur,1),e=1-Math.pow(1-p,3);
+    el.textContent=Math.round(e*target).toLocaleString();if(p<1)requestAnimationFrame(tick);};
+  requestAnimationFrame(tick);
+});
+
+// ── Mini bar fills ─────────────────────────────────────────────────
+setTimeout(()=>{
+  document.querySelectorAll('.mini-fill[data-width]').forEach(el=>el.style.width=el.dataset.width+'%');
+  document.querySelectorAll('.pr-fill[data-w]').forEach(el=>el.style.width=el.dataset.w+'%');
+},150);
+
+// ── PHASE 1 CHARTS ────────────────────────────────────────────────
+const weeks=['Wk 1','Wk 2','Wk 3','Wk 4','Wk 5','Wk 6','Wk 7','Wk 8'];
+
+new Chart(document.getElementById('chart-screening'),{
+  type:'line',
+  data:{
+    labels:weeks,
+    datasets:[
+      {label:'Total screened',data:[1820,1950,2100,2280,2350,2500,2620,2847],
+       borderColor:GRN,backgroundColor:GRN_A(.08),fill:true,tension:.4,pointRadius:4,pointBackgroundColor:GRN,borderWidth:2.5},
+      {label:'RED flags',data:[8,11,9,14,12,16,14,18],
+       borderColor:RED,backgroundColor:RED_A(.07),fill:true,tension:.4,pointRadius:4,pointBackgroundColor:RED,borderWidth:2,yAxisID:'y1'},
+      {label:'Referrals made',data:[5,9,7,11,10,13,12,15],
+       borderColor:AMB,backgroundColor:AMB_A(.06),fill:false,tension:.4,pointRadius:3,pointBackgroundColor:AMB,borderWidth:1.5,yAxisID:'y1'},
+    ]
+  },
+  options:{responsive:true,interaction:{mode:'index',intersect:false},
+    scales:{
+      x:{grid:gridOpts},
+      y:{grid:gridOpts,title:{display:true,text:'Individuals screened',font:{size:10}}},
+      y1:{position:'right',grid:{display:false},title:{display:true,text:'Flags / Referrals',font:{size:10}},max:30}
+    },
+    plugins:{legend:{labels:{usePointStyle:true,pointStyle:'circle',boxWidth:7}}}}
+});
+
+new Chart(document.getElementById('chart-fieldworkers'),{
+  type:'bar',
+  data:{
+    labels:['Z-01','Z-02','Z-03','Z-04','Z-05','Z-06','Z-07','Z-08'],
+    datasets:[
+      {label:'TBAs',data:[24,31,22,18,27,29,21,14],backgroundColor:GRN_A(.75),borderColor:GRN,borderWidth:1,borderRadius:3},
+      {label:'VHWs',data:[18,29,26,22,30,34,24,16],backgroundColor:BLU_A(.65),borderColor:BLU,borderWidth:1,borderRadius:3},
+    ]
+  },
+  options:{responsive:true,
+    scales:{x:{grid:gridOpts,stacked:false},y:{grid:gridOpts,title:{display:true,text:'Field workers',font:{size:10}}}},
+    plugins:{legend:{labels:{usePointStyle:true,pointStyle:'rect',boxWidth:10}}}}
+});
+
+// ── PHASE 2 CHARTS ────────────────────────────────────────────────
+function buildPhase2Charts(){
+  new Chart(document.getElementById('chart-muac'),{
+    type:'line',
+    data:{
+      labels:weeks,
+      datasets:[
+        {label:'SAM %',data:[5.2,5.8,6.4,7.1,7.5,7.8,7.9,8.0],borderColor:RED,backgroundColor:RED_A(.07),fill:true,tension:.4,pointRadius:3,borderWidth:2.5},
+        {label:'MAM %',data:[12,12.8,13.2,14,14.4,14.8,15,15],borderColor:AMB,backgroundColor:AMB_A(.06),fill:true,tension:.4,pointRadius:3,borderWidth:2},
+        {label:'GAM % (SAM+MAM)',data:[17.2,18.6,19.6,21.1,21.9,22.6,22.9,23],borderColor:GRN,backgroundColor:'transparent',borderDash:[5,3],tension:.4,pointRadius:3,borderWidth:1.5},
+      ]
+    },
+    options:{responsive:true,interaction:{mode:'index',intersect:false},
+      scales:{
+        x:{grid:gridOpts},
+        y:{grid:gridOpts,title:{display:true,text:'Prevalence (%)',font:{size:10}},
+           min:0,max:30,
+           annotations:{threshold:{type:'line',yMin:15,yMax:15,borderColor:RED,borderDash:[6,3],borderWidth:1.5}}}
+      },
+      plugins:{
+        legend:{labels:{usePointStyle:true,pointStyle:'circle',boxWidth:7}},
+        annotation:{annotations:{emergency:{type:'line',yMin:15,yMax:15,borderColor:'rgba(192,57,43,.6)',borderDash:[6,3],borderWidth:1.5,label:{content:'Sphere emergency threshold (15%)',enabled:true,position:'start',font:{size:9}}}}}
+      }}
+  });
+
+  // BP doughnut
+  new Chart(document.getElementById('chart-bp'),{
+    type:'doughnut',
+    data:{
+      labels:['Hypertension ≥140/90','Elevated 130–139','Normal <130'],
+      datasets:[{data:[62,88,234],backgroundColor:[RED_A(.85),AMB_A(.8),GRN_A(.75)],borderWidth:2,borderColor:'#fff',hoverOffset:6}]
+    },
+    options:{responsive:true,cutout:'60%',
+      plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',boxWidth:7,padding:8}}}}
+  });
+
+  // Glucose bar
+  new Chart(document.getElementById('chart-glucose'),{
+    type:'bar',
+    data:{
+      labels:['Glucose\n≥11.1 mmol/L','Glucose\n7.8–11.0','Normal\n<7.8','Dipstick\nGlucose 2+','Dipstick\nProtein 2+'],
+      datasets:[{
+        label:'Count',
+        data:[18,34,189,14,6],
+        backgroundColor:[RED_A(.8),AMB_A(.75),GRN_A(.7),RED_A(.65),RED_A(.5)],
+        borderColor:[RED,AMB,GRN,RED,RED],
+        borderWidth:1,borderRadius:5
+      }]
+    },
+    options:{responsive:true,scales:{x:{grid:{display:false}},y:{grid:gridOpts,title:{display:true,text:'Count',font:{size:10}}}},
+      plugins:{legend:{display:false}}}
+  });
+}
+
+// ── PHASE 3 CHARTS ────────────────────────────────────────────────
+function buildPhase3Charts(){
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  new Chart(document.getElementById('chart-pipeline'),{
+    type:'bar',
+    data:{
+      labels:days,
+      datasets:[
+        {label:'SMS uploads received',data:[38,45,42,48,35,22,82],backgroundColor:GRN_A(.7),borderColor:GRN,borderWidth:1,borderRadius:4},
+        {label:'Records digitised',data:[35,42,40,46,33,20,82],backgroundColor:BLU_A(.6),borderColor:BLU,borderWidth:1,borderRadius:4},
+        {label:'Failed / pending',data:[3,3,2,2,2,2,0],backgroundColor:RED_A(.6),borderColor:RED,borderWidth:1,borderRadius:4},
+        {label:'Compliance % (line)',data:[92,88,95,91,86,82,72],type:'line',borderColor:AMB,backgroundColor:'transparent',borderDash:[5,3],tension:.4,pointRadius:4,pointBackgroundColor:AMB,borderWidth:2,yAxisID:'y1'}
+      ]
+    },
+    options:{responsive:true,interaction:{mode:'index',intersect:false},
+      scales:{
+        x:{grid:{display:false}},
+        y:{grid:gridOpts,title:{display:true,text:'Upload count',font:{size:10}},stacked:false},
+        y1:{position:'right',grid:{display:false},title:{display:true,text:'Compliance %',font:{size:10}},min:50,max:100}
+      },
+      plugins:{legend:{labels:{usePointStyle:true,pointStyle:'circle',boxWidth:7}}}}
+  });
+}
+</script>
+</body>
+</html>
